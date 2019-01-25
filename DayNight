@@ -1,0 +1,16 @@
+local rate = .15
+
+while wait() do
+	game.Lighting:SetMinutesAfterMidnight(game.Lighting:GetMinutesAfterMidnight() + rate)
+	
+	local hours = math.abs(tonumber(game.Lighting.TimeOfDay:sub(1,2)) - 12)
+	local minutes = tonumber(game.Lighting.TimeOfDay:sub(4,5))
+	if game.Lighting:GetMinutesAfterMidnight() < 12*60 then
+		t = hours - (minutes/60)
+	else
+		t = hours + (minutes/60)
+	end
+	local ratio = math.abs(1 - (t/15))
+	game.Lighting.OutdoorAmbient = Color3.new((ratio * 127)/255,(ratio * 127)/255,(ratio * 127)/255)
+	--game.Lighting.Ambient = Color3.new((ratio * 128)/255,(ratio * 128)/255,(ratio * 128)/255)
+end
