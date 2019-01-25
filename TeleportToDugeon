@@ -1,0 +1,131 @@
+
+repStore = game:GetService("ReplicatedStorage")
+Movin = repStore.RemoteFolder.DRemotes:WaitForChild("Movin")
+local TS = game:GetService("TeleportService")
+
+Movin.OnServerEvent:connect(function(plr, Location)
+	
+	local placeid = nil
+	
+	
+	local gui = Instance.new('ScreenGui')
+	
+	local frame = Instance.new('Frame', gui)
+	frame.Size = UDim2.new(1,0,1,0)
+	frame.BackgroundColor3 = Color3.fromRGB(0,0,0)
+	frame.BackgroundTransparency = 1
+	
+	local logo = Instance.new('ImageLabel', frame)
+	logo.BackgroundTransparency = 1
+	logo.Image = "rbxassetid://2032831840"
+	logo.Size = UDim2.new(.6,0,.9,0)
+	logo.Position = UDim2.new(.2,0,.05,0)
+
+	spawn(function()
+		for i = 50, 0, -1 do
+			logo.ImageTransparency = i/50
+			frame.BackgroundTransparency = i/50
+			wait()
+		end
+	end)
+	
+	
+	if Location == "Earth" then
+		if plr.Specials.EarthKey.Value == false then return end
+		placeid = 945381449
+	elseif Location == "Magma" then
+		if plr.Specials.MagmaKey.Value == false then return end
+		placeid = 945982762
+	elseif Location == "Sand" then
+		if plr.Specials.SandKey.Value == false then return end
+		placeid = 945981749
+	elseif Location == "PVP" then
+		if plr.leaderstats.Lvl.Value < 5 then return end
+		placeid = 1071925448
+	elseif Location == "Skies" then
+		placeid = 2029907854
+	elseif Location == "Eris" then
+		placeid = 1665922270
+	end
+
+	
+	local code = TS:ReserveServer(placeid)
+	
+	local m = plr.GuildFolder.Members
+	local leader = game.Players:FindFirstChild(m.Leader.Value)
+	local m1 = game.Players:FindFirstChild(m.Member1.Value)
+	local m2 = game.Players:FindFirstChild(m.Member2.Value)
+	local m3 = game.Players:FindFirstChild(m.Member3.Value)
+	local m4 = game.Players:FindFirstChild(m.Member4.Value)
+	
+	if plr.GuildFolder.IsInGuild.Value == true then
+		
+		local group = {
+		leader,
+		m1,
+		m2,
+		m3,
+		m4,
+		}
+		
+		if Location == "Skies" then
+			
+			for i,v in pairs(group) do
+				--[[local load = repStore.GUIs:WaitForChild("LoadingC"):Clone()
+				load:WaitForChild("Area").Value = "PVP Arena"
+				load.Parent = v.PlayerGui]]
+				
+				gui.Parent = v.PlayerGui
+			end
+			
+			
+			if game.VIPServerId ~= "" and game.VIPServerOwnerId ~= 0 then
+				TS:TeleportToPrivateServer(placeid,code,group, {}, {}, repStore.GUIs:WaitForChild("CLoadingScreen"))
+			else
+				TS:TeleportPartyAsync(placeid,group,{},repStore.GUIs:WaitForChild("CLoadingScreen"))
+			end
+			
+		return end
+		
+		for i,v in pairs(group) do
+			--[[local load = repStore.GUIs:WaitForChild("LoadingC"):Clone()
+			load:WaitForChild("Area").Value = "Dungeon"
+			load.Parent = v.PlayerGui]]
+			
+			gui.Parent = v.PlayerGui
+		end
+			
+		TS:TeleportToPrivateServer(placeid,code,group, {}, {}, repStore.GUIs:WaitForChild("CLoadingScreen"))
+		
+		
+	elseif plr.GuildFolder.IsInGuild.Value == false then -- SINGLE PLAYER
+		
+		local group = {
+			game.Players:FindFirstChild(plr.Name),
+		}
+		
+		if Location == "Skies" then 
+			
+			gui.Parent = plr.PlayerGui
+			
+			--[[for i,v in pairs(group:GetChildren()) do
+				local load = repStore.GUIs:WaitForChild("LoadingC"):Clone()
+				load:WaitForChild("Area").Value = "Dungeon"
+				load.Parent = v.PlayerGui
+			
+				gui.Parent = v.PlayerGui
+			end]]
+			if game.VIPServerId ~= "" and game.VIPServerOwnerId ~= 0 then
+				TS:TeleportToPrivateServer(placeid,code,group, {}, {}, repStore.GUIs:WaitForChild("CLoadingScreen"))
+			else
+				TS:Teleport(placeid,plr,{},repStore.GUIs:WaitForChild("CLoadingScreen"))
+			end
+			
+			
+		return end
+
+		gui.Parent = plr.PlayerGui
+		
+		TS:TeleportToPrivateServer(placeid,code,group, {}, {}, repStore.GUIs:WaitForChild("CLoadingScreen"))
+	end
+end)
