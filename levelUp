@@ -1,0 +1,31 @@
+repStore = game:GetService("ReplicatedStorage")
+Remote = repStore.RemoteFolder:WaitForChild("LRemote")
+
+Listen = repStore.RemoteFolder.CoreRemotes:WaitForChild("Listener")
+Show = repStore.RemoteFolder.CoreRemotes:WaitForChild("Show")
+
+Remote.OnServerEvent:connect(function(plr)
+	if plr.Stats.EXP.Value >= plr.Stats.EXPN.Value then
+		plr.leaderstats.Lvl.Value = plr.leaderstats.Lvl.Value + 1
+		if plr.leaderstats.Lvl.Value > 60 then
+			plr.leaderstats.Lvl.Value = 60
+			plr.Stats.EXP.Value = plr.Stats.EXP.Value - plr.Stats.EXPN.Value
+		return end
+		plr.Stats.EXP.Value = plr.Stats.EXP.Value - plr.Stats.EXPN.Value
+		wait()
+		plr.Stats.EXPN.Value = plr.leaderstats.Lvl.Value * 50
+		plr.Stats.Gold.Value = plr.Stats.Gold.Value + plr.leaderstats.Lvl.Value * 15
+		plr.Stats.TalentPoints.Value = plr.Stats.TalentPoints.Value + 1
+		local GUI = repStore.GUIs:FindFirstChild("LevelUp"):Clone()
+		GUI.Frame.N:WaitForChild("Level").Text = plr.leaderstats.Lvl.Value
+		GUI.Parent = plr.PlayerGui
+		if plr.leaderstats.Lvl.Value == 60 then
+			local BadgeService = game:GetService("BadgeService")
+			BadgeService:AwardBadge(plr.UserId, 2124425799)
+		end
+	end
+end)
+
+Listen.OnServerEvent:connect(function(plr)
+	Show:FireClient(plr)
+end)
