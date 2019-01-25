@@ -1,0 +1,52 @@
+player = game.Players.LocalPlayer
+repStore = game:GetService("ReplicatedStorage")
+player:WaitForChild("Backpack")
+player:WaitForChild("Sack")
+backpack = player:WaitForChild("Backpack")
+sack = player:WaitForChild("Sack")
+inventory = script.Parent.Parent.Parent
+gui = script.Parent.Parent.Parent.Parent
+Remote = repStore.RemoteFolder.PrimaryRemotes:WaitForChild("ItemMove")
+
+script.Parent.MouseButton1Click:connect(function()
+	if script.Parent.Tool.Value ~= nil then
+		local tooL = player.Sack:FindFirstChild(tostring(script.Parent.Tool.Value))
+		if tooL.Slot.Primary.Value == true then
+			local Weapons = inventory.Equipped:WaitForChild("Weapons"):GetChildren()
+			for i,v in pairs(Weapons) do
+				if v.ClassName == "ImageButton" then
+					for i = 1,2 do
+						local v = inventory.Equipped.Weapons:FindFirstChild("Wep"..i)
+						if v.Tool.Value == nil then
+							Remote:FireServer(script.Parent.Tool.Value)
+							script.Sound:Play()
+							v.Tool.Value = script.Parent.Tool.Value
+							v.Image = script.Parent.Image
+							script.Parent.Tool.Value = nil
+							script.Parent.Image = ""
+							break
+						end
+					end
+				end
+			end
+		elseif tooL.Slot.Extra.Value == true then
+			local Potions = inventory.Equipped:WaitForChild("Misc"):GetChildren()
+			for i,v in pairs(Potions) do
+				if v.ClassName == "ImageButton" then
+					for i = 1,4 do
+						local v = inventory.Equipped.Misc:FindFirstChild("PotionSlot"..i)
+						if v.Tool.Value == nil then
+							script.Sound:Play()
+							Remote:FireServer(script.Parent.Tool.Value)
+							v.Tool.Value = script.Parent.Tool.Value
+							v.Image = script.Parent.Image
+							script.Parent.Tool.Value = nil
+							script.Parent.Image = ""
+							break
+						end
+					end
+				end
+			end
+		elseif tooL.Slot.Non.Value == true then return end
+	end
+end)
