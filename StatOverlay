@@ -1,0 +1,37 @@
+wait(1)
+print("EXP Overlay Launched")
+
+local repStore = game:GetService("ReplicatedStorage")
+local Remote = repStore.RemoteFolder:WaitForChild("LRemote")
+
+local player = game.Players.LocalPlayer
+local character = player.Character
+local hum = character.Humanoid
+local over = script.Parent.Overlay
+local under = script.Parent
+
+player:WaitForChild("Stats")
+
+function update()
+	local xpN = player.Stats.EXPN.Value
+	local xp = player.Stats.EXP.Value / xpN
+	
+	if player.Stats.EXP.Value >= xpN  then
+		Remote:FireServer()
+		wait(1)
+		local xpN = player.Stats.EXPN.Value
+		local xp = player.Stats.EXP.Value / xpN
+		over:TweenSize(UDim2.new(xp,0,1,0), "In", "Bounce", .5)
+		wait()
+		print("Leveled up.")
+	else
+		over:TweenSize(UDim2.new(xp,0,1,0), "In", "Bounce", .5)
+		wait(0.1)
+		print("XP Updated.")
+	end
+	wait(1)
+end
+
+update()
+
+player.Stats.EXP.Changed:connect(update)
