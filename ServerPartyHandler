@@ -1,0 +1,204 @@
+
+repStore = game:GetService("ReplicatedStorage")
+Lead = repStore.RemoteFolder.GRemotes:WaitForChild("Lead")
+Update = repStore.RemoteFolder.GRemotes:WaitForChild("Update")
+Notify = repStore.RemoteFolder.GRemotes:WaitForChild("Notify")
+Decline = repStore.RemoteFolder.GRemotes:WaitForChild("Decline")
+Accept = repStore.RemoteFolder.GRemotes:WaitForChild("Accept")
+Reply = repStore.RemoteFolder.GRemotes:WaitForChild("Reply")
+Leave = repStore.RemoteFolder.GRemotes:WaitForChild("Leave")
+
+Accept.OnServerEvent:connect(function(plr, leader)
+	local Leader = game.Players:FindFirstChild(leader)
+	plr.GuildFolder.GNotify.Value = false
+	if plr.GuildFolder.IsMember.Value == true then return end
+	for i,v in pairs(Leader.GuildFolder.Members:GetChildren()) do
+		if v.Value == "" then
+			print("Player Added.")
+			v.Value = plr.Name
+			plr.GuildFolder.IsInGuild.Value = true
+			plr.GuildFolder.IsMember.Value = true
+			
+			plr.GuildFolder.Members.Leader.Value = Leader.GuildFolder.Members.Leader.Value
+			plr.GuildFolder.Members.Member1.Value = Leader.GuildFolder.Members.Member1.Value
+			plr.GuildFolder.Members.Member2.Value = Leader.GuildFolder.Members.Member2.Value
+			plr.GuildFolder.Members.Member3.Value = Leader.GuildFolder.Members.Member3.Value
+			Update:FireClient(plr)
+			Update:FireClient(Leader)
+			local mf = plr.GuildFolder.Members
+			local l = game.Players:FindFirstChild(mf.Leader.Value)
+			local m1 = game.Players:FindFirstChild(mf.Member1.Value)
+			local m2 = game.Players:FindFirstChild(mf.Member2.Value)
+			local m3 = game.Players:FindFirstChild(mf.Member3.Value)
+		
+			local members = {
+				l,
+				m1,
+				m2,
+				m3,
+			}
+			wait(1)
+			for i,v in pairs(members:GetChildren()) do
+				Update:FireClient(v)
+			end
+			break
+		else
+			print("This slot is taken!")
+		end
+	end
+end)
+
+
+Lead.OnServerEvent:connect(function(plr)
+	plr.GuildFolder.IsInGuild.Value = true
+	plr.GuildFolder.IsLeader.Value = true
+	plr.GuildFolder.Members.Leader.Value = plr.Name
+	wait(1)
+	Update:FireClient(plr)
+end)
+
+Notify.OnServerEvent:connect(function(plr, text)
+	if game.Players:FindFirstChild(text) == nil then return end
+	game.Players:FindFirstChild(text).GuildFolder.GNotify.Value = true
+	local GUI = repStore.GUIs:WaitForChild("GuildNotify"):Clone()
+	GUI.Frame.Message.Text = plr.Name.. " wants you to join their party."
+	GUI.Leader.Value = plr.Name
+	GUI.Parent = game.Players:FindFirstChild(text).PlayerGui
+	Reply:FireClient(plr)
+end)
+
+Decline.OnServerEvent:connect(function(plr)
+	plr.GuildFolder.GNotify.Value = false
+end)
+
+Leave.OnServerEvent:connect(function(plr)
+	print("Guild Left.")
+	if plr.GuildFolder.IsInGuild.Value == false then return end
+	plr.GuildFolder.IsInGuild.Value = false
+	if plr.GuildFolder.IsLeader.Value == true then
+		plr.GuildFolder.IsLeader.Value = false
+		print("Leader Leaving.")
+		local mf = plr.GuildFolder.Members
+		local l = game.Players:FindFirstChild(mf.Leader.Value)
+		local m1 = game.Players:FindFirstChild(mf.Member1.Value)
+		local m2 = game.Players:FindFirstChild(mf.Member2.Value)
+		local m3 = game.Players:FindFirstChild(mf.Member3.Value)
+		
+		local members = {
+			l,
+			m1,
+			m2,
+			m3,
+		}
+		wait(1)
+		for i,v in pairs(members) do
+			if v ~= nil then
+				v.GuildFolder.IsInGuild.Value = false
+				v.GuildFolder.IsMember.Value = false
+				local folder = v.GuildFolder.Members:GetChildren()
+				for i,v in pairs(folder) do
+					v.Value = ""
+				end
+				Update:FireClient(v)
+			end
+		end
+		wait(1)
+		Update:FireClient(plr)
+	elseif plr.GuildFolder.IsMember.Value == true then
+		plr.GuildFolder.IsMember.Value = false
+		print("Member Leaving.")
+		local mf = plr.GuildFolder.Members
+		local l = game.Players:FindFirstChild(mf.Leader.Value)
+		local m1 = game.Players:FindFirstChild(mf.Member1.Value)
+		local m2 = game.Players:FindFirstChild(mf.Member2.Value)
+		local m3 = game.Players:FindFirstChild(mf.Member3.Value)
+		
+		local members = {
+			l,
+			m1,
+			m2,
+			m3,
+		}
+		
+		for i,v in pairs(plr.GuildFolder.Members:GetChildren()) do
+			v.Value = ""
+		end
+		wait(1)
+		for i,v in pairs(members) do
+			if v ~= nil then
+				for i,y in pairs(v.GuildFolder.Members:GetChildren()) do
+					if y.Value == plr.Name then
+						y.Value = ""
+						Update:FireClient(v)
+					end
+				end
+			end
+		end
+		wait(1)
+		Update:FireClient(plr)
+	end
+end)
+
+game.Players.PlayerRemoving:connect(function(plr)
+	if plr.GuildFolder.IsInGuild.Value == false then return end
+	if plr.GuildFolder.IsLeader.Value == true then
+		local mf = plr.GuildFolder.Members
+		local m1 = game.Players:FindFirstChild(mf.Member1.Value)
+		local m2 = game.Players:FindFirstChild(mf.Member2.Value)
+		local m3 = game.Players:FindFirstChild(mf.Member3.Value)
+		
+		local members = {
+			m1,
+			m2,
+			m3,
+		}
+		
+		for i,v in pairs(members) do
+			if v ~= nil then
+				v.GuildFolder.IsInGuild.Value = false
+				v.GuildFolder.IsMember.Value = false
+				local folder = v.GuildFolder.Members:GetChildren()
+				for i,v in pairs(folder) do
+					v.Value = ""
+				end
+				wait(1)
+				Update:FireClient(v)
+			end
+		end
+		
+	elseif plr.GuildFolder.IsMember.Value == true then
+		plr.GuildFolder.IsMember.Value = false
+		print("Member Leaving.")
+		local mf = plr.GuildFolder.Members
+		local l = game.Players:FindFirstChild(mf.Leader.Value)
+		local m1 = game.Players:FindFirstChild(mf.Member1.Value)
+		local m2 = game.Players:FindFirstChild(mf.Member2.Value)
+		local m3 = game.Players:FindFirstChild(mf.Member3.Value)
+		
+		local members = {
+			l,
+			m1,
+			m2,
+			m3,
+		}
+		
+		for i,v in pairs(plr.GuildFolder.Members:GetChildren()) do
+			v.Value = ""
+		end
+		
+		for i,v in pairs(members) do
+			if v ~= nil then
+				for i,y in pairs(v.GuildFolder.Members:GetChildren()) do
+					if y.Value == plr.Name then
+						y.Value = ""
+						wait(1)
+						Update:FireClient(v)
+					end
+				end
+			end
+		end
+		wait(1)
+		Update:FireClient(plr)
+	end
+end)
+
