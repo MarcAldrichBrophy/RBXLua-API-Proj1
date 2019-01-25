@@ -1,0 +1,110 @@
+
+repStore = game:GetService("ReplicatedStorage")
+remote = repStore.RemoteFolder.guiRemotes.OutlyRemotes:WaitForChild("Tool")
+remote2 = repStore.RemoteFolder.guiRemotes.OutlyRemotes:WaitForChild("Mat")
+
+
+script.Parent.MouseButton1Down:connect(function()
+	local buying = script.Parent.Parent.Parent.ItemID.Value
+	local amount = tonumber(buy.Amount.Text)
+	
+	if plr.Stats.Gold.Value < amount then -- client side check
+		buy.Parent.Error:Play()
+		script.Parent.Text = "You don't have enough!"
+		wait(1)
+		script.Parent.Text = savetext
+	return end
+	
+	
+	if buying == "Deed" then
+		local Type = "Deed"
+		if plr.HouseFolder.OwnDeed1.Value == true then
+			buy.Parent.Error:Play()
+			script.Parent.Text = "You already have that!"
+			wait(1)
+			script.Parent.Text = savetext
+		elseif plr.HouseFolder.OwnDeed1.Value == false then
+			buy.Parent.Coin:Play()
+			remote2:FireServer(buy.ItemID.Value, amount, Type)
+			script.Parent.Text = "Purchased!"
+			wait(1)
+			script.Parent.Text = savetext
+		end
+	return end
+	
+	if buying == "Health" or buying == "Mana" or buying == "Magic" or buying == "Physical" then
+		local Type = "Mask"
+		if buying == "Health" then
+			if plr.Masks.Health.Value == true then 
+				buy.Parent.Error:Play()
+				script.Parent.Text = "You already have that!"
+				wait(1)
+				script.Parent.Text = savetext
+			elseif plr.Masks.Health.Value == false then
+				buy.Parent.Coin:Play()
+				remote2:FireServer(buy.ItemID.Value, amount, Type)
+				script.Parent.Text = "Purchased!"
+				wait(1)
+				script.Parent.Text = savetext
+			return end
+		elseif buying == "Mana" then
+			if plr.Masks.Mana.Value == true then 
+				buy.Parent.Error:Play()
+				script.Parent.Text = "You already have that!"
+				wait(1)
+				script.Parent.Text = savetext
+			elseif plr.Masks.Mana.Value == false then
+				buy.Parent.Coin:Play()
+				remote2:FireServer(buy.ItemID.Value, amount, Type)
+				script.Parent.Text = "Purchased!"
+				wait(1)
+				script.Parent.Text = savetext
+			return end
+		elseif buying == "Magic" then
+			if plr.Masks.Magic.Value == true then 
+				buy.Parent.Error:Play()
+				script.Parent.Text = "You already have that!"
+				wait(1)
+				script.Parent.Text = savetext
+			elseif plr.Masks.Magic.Value == false then
+				buy.Parent.Coin:Play()
+				remote2:FireServer(buy.ItemID.Value, amount, Type)
+				script.Parent.Text = "Purchased!"
+				wait(1)
+				script.Parent.Text = savetext
+			return end
+		elseif buying == "Physical" then
+			if plr.Masks.Physical.Value == true then 
+				buy.Parent.Error:Play()
+				script.Parent.Text = "You already have that!"
+				wait(1)
+				script.Parent.Text = savetext
+			elseif plr.Masks.Physical.Value == false then
+				buy.Parent.Coin:Play()
+				remote2:FireServer(buy.ItemID.Value, amount, Type)
+				script.Parent.Text = "Purchased!"
+				wait(1)
+				script.Parent.Text = savetext
+			return end
+		end
+	end
+
+	--[[local Type = "Mask"
+	local amount = tonumber(buy.Amount.Text)
+	local plrgold = plr.Stats.Gold.Value
+	if plrgold >= amount then
+		
+			remote2:FireServer(buy.ItemID.Value, amount, Type)
+			buy.Parent.Coin:Play()
+			script.Parent.Text = "Purchased!"
+			wait(1)
+			script.Parent.Text = savetext
+	elseif plrgold < amount then
+		script.Parent.Text = "You don't have enough!"
+		buy.Parent.Error:Play()
+		wait(1)
+		script.Parent.Text = savetext
+	else
+		buy.Parent.Error:Play()
+	end]]
+end)
